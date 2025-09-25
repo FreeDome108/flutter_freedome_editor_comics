@@ -1,5 +1,3 @@
-library freedome_editor_comics;
-
 // Models
 export 'models/comics.dart';
 export 'models/layer.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/layer.dart';
 import '../models/image.dart';
-import '../models/cultures.dart';
 import '../models/animation_types.dart';
 import '../models/translate_animation.dart';
 import '../models/rotate_animation.dart';
@@ -46,28 +45,28 @@ class LayerViewModel extends ChangeNotifier {
       layer.animations,
       _selectedAnim,
       scroll,
-      () => TranslateAnimation.createDefault(),
+      TranslateAnimation.createDefault,
     );
 
     final rotate = Animation.interpolateAnimations<RotateAnimation>(
       layer.animations,
       _selectedAnim,
       scroll,
-      () => RotateAnimation.createDefault(),
+      RotateAnimation.createDefault,
     );
 
     final scale = Animation.interpolateAnimations<ScaleAnimation>(
       layer.animations,
       _selectedAnim,
       scroll,
-      () => ScaleAnimation.createDefault(),
+      ScaleAnimation.createDefault,
     );
 
     final alpha = Animation.interpolateAnimations<AlphaAnimation>(
       layer.animations,
       _selectedAnim,
       scroll,
-      () => AlphaAnimation.createDefault(),
+      AlphaAnimation.createDefault,
     );
 
     return AnimationState(
