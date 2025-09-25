@@ -1,4 +1,4 @@
-package com.example.freedome_editor_comics_example
+package com.example.example
 
 import io.flutter.embedding.android.FlutterActivity
 

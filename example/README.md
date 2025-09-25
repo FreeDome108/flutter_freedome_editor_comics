@@ -1,6 +1,6 @@
-# freedome_editor_comics_example
+# example
 
-Demonstrates how to use the freedome_editor_comics plugin.
+A new Flutter project.
 
 ## Getting Started
 
