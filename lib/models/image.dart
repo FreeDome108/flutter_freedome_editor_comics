@@ -1,4 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../utils/file_manager.dart';
+import '../utils/image_processor.dart';
 
 part 'image.g.dart';
 
@@ -22,24 +24,23 @@ class Image {
     bool puzzle,
     bool popup,
   ) async {
-    // TODO: Implement file management
     if (popup) {
-      this.popup = newFile;
+      this.popup = await FileManager.update(folder, this.popup, newFile);
     } else {
-      file = newFile;
-      // TODO: Get actual image dimensions
-      width = 512;
-      height = 512;
+      file = await FileManager.updateTiles(folder, file, newFile, puzzle);
+      // Получаем реальные размеры изображения
+      final size = await ImageProcessor.getImageSize(newFile);
+      width = size.width;
+      height = size.height;
     }
   }
 
   /// Удаление изображения
   Future<void> delete(String folder) async {
-    // TODO: Implement file deletion
     if (isTiles) {
-      // TODO: Delete tiles
+      await FileManager.deleteTiles(folder, file);
     } else {
-      // TODO: Delete single file
+      await FileManager.delete(folder, file);
     }
   }
 

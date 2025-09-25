@@ -15,6 +15,11 @@ export 'models/pivot_animation.dart';
 // Utils
 export 'utils/file_manager.dart';
 export 'utils/zip_utils.dart';
+export 'utils/image_processor.dart';
+
+// Widgets
+export 'widgets/comics_canvas.dart';
+export 'widgets/animation_timeline.dart';
 
 // ViewModels
 export 'viewmodels/comics_view_model.dart';

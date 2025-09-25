@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freedome_editor_comics/freedome_editor_comics.dart';
+import 'package:file_picker/file_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -69,8 +70,9 @@ class _ComicsEditorPageState extends State<ComicsEditorPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
           // Информация о комиксе
           Card(
             margin: const EdgeInsets.all(16),
@@ -105,24 +107,46 @@ class _ComicsEditorPageState extends State<ComicsEditorPage> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () async {
-                          // TODO: Implement image picker
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Image picker not implemented yet'),
-                            ),
+                          final result = await FilePicker.platform.pickFiles(
+                            type: FileType.image,
+                            allowMultiple: false,
                           );
+                          
+                          if (result != null && result.files.isNotEmpty) {
+                            final file = result.files.first;
+                            if (file.path != null) {
+                              await _viewModel.addLayer(file.path!);
+                              setState(() {});
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Layer added: ${file.name}'),
+                                ),
+                              );
+                            }
+                          }
                         },
                         icon: const Icon(Icons.image),
                         label: const Text('Add Layer'),
                       ),
                       ElevatedButton.icon(
                         onPressed: () async {
-                          // TODO: Implement audio picker
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Audio picker not implemented yet'),
-                            ),
+                          final result = await FilePicker.platform.pickFiles(
+                            type: FileType.audio,
+                            allowMultiple: false,
                           );
+                          
+                          if (result != null && result.files.isNotEmpty) {
+                            final file = result.files.first;
+                            if (file.path != null) {
+                              await _viewModel.addSound(file.path!);
+                              setState(() {});
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Sound added: ${file.name}'),
+                                ),
+                              );
+                            }
+                          }
                         },
                         icon: const Icon(Icons.audiotrack),
                         label: const Text('Add Sound'),
@@ -181,36 +205,70 @@ class _ComicsEditorPageState extends State<ComicsEditorPage> {
             ),
           ),
 
-          // Список слоев
-          Expanded(
-            child: ListView.builder(
-              itemCount: _viewModel.layers.length,
-              itemBuilder: (context, index) {
-                final layer = _viewModel.layers[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
+          // Canvas для отображения комикса
+          Card(
+            margin: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    'Comics Preview',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  child: ListTile(
-                    leading: const Icon(Icons.layers),
-                    title: Text('Layer ${index + 1}'),
-                    subtitle: Text(
-                      'Animations: ${layer.layer.animations.length}',
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () async {
-                        await _viewModel.removeLayer(layer);
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                );
-              },
+                ),
+                ComicsCanvas(viewModel: _viewModel, width: 400, height: 300),
+              ],
             ),
           ),
-        ],
+
+          // Временная шкала анимаций
+          if (_viewModel.layers.isNotEmpty)
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: AnimationTimeline(
+                layerViewModel: _viewModel.layers.first,
+                scroll: _viewModel.scroll,
+                onScrollChanged: (value) {
+                  setState(() {
+                    _viewModel.scroll = value;
+                  });
+                },
+              ),
+            ),
+
+          // Список слоев
+          ..._viewModel.layers.asMap().entries.map(
+            (entry) {
+              final index = entry.key;
+              final layer = entry.value;
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                child: ListTile(
+                  leading: const Icon(Icons.layers),
+                  title: Text('Layer ${index + 1}'),
+                  subtitle: Text(
+                    'Animations: ${layer.layer.animations.length}',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () async {
+                      await _viewModel.removeLayer(layer);
+                      setState(() {});
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // Добавляем отступ внизу
+          const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
