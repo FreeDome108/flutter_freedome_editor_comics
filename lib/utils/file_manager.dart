@@ -101,7 +101,7 @@ class FileManager {
 
     // TODO: Implement image processing with ImageMagick equivalent
     // For now, just copy the file
-    final destPath = '$tempDir/$folder/${name}${ext}';
+    final destPath = '$tempDir/$folder/$name$ext';
     await File(newFile).copy(destPath);
 
     final fullName = '${name}_{0}_{1}_{2}$ext';

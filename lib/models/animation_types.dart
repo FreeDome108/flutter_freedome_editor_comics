@@ -49,7 +49,7 @@ abstract class Animation {
   }
 
   /// Интерполяция анимаций
-  static T interpolate<T extends Animation>(
+  static T interpolateAnimations<T extends Animation>(
     List<Animation> animations,
     Animation? selected,
     double scroll,

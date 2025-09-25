@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/sound.dart';
 import '../models/sound_animation.dart';
+import '../models/animation_types.dart';
 import 'comics_view_model.dart';
 
 /// ViewModel для управления звуком

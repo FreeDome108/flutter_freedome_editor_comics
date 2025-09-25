@@ -16,15 +16,18 @@ class SoundAnimation extends Animation {
     double prevScroll,
     double scroll,
   ) {
-    return animations.whereType<SoundAnimation>().firstWhere(
-      (x) =>
-          (x.start <= scroll && x.end >= scroll) ||
-          (x.start == x.end &&
-              prevScroll < scroll &&
-              prevScroll <= x.start &&
-              x.start <= scroll),
-      orElse: () => null,
-    );
+    try {
+      return animations.whereType<SoundAnimation>().firstWhere(
+        (x) =>
+            (x.start <= scroll && x.end >= scroll) ||
+            (x.start == x.end &&
+                prevScroll < scroll &&
+                prevScroll <= x.start &&
+                x.start <= scroll),
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Создание звуковой анимации по умолчанию
