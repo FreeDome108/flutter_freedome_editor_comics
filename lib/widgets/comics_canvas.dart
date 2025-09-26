@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
-import '../models/comics.dart';
-import '../models/layer.dart';
-import '../models/image.dart';
 import '../viewmodels/comics_view_model.dart';
 import '../viewmodels/layer_view_model.dart';
 
@@ -25,7 +22,7 @@ class ComicsCanvas extends StatefulWidget {
 
 class _ComicsCanvasState extends State<ComicsCanvas> {
   late ComicsViewModel _viewModel;
-  List<ui.Image> _cachedImages = [];
+  final List<ui.Image> _cachedImages = [];
   bool _isLoading = false;
 
   @override
@@ -62,7 +59,8 @@ class _ComicsCanvasState extends State<ComicsCanvas> {
           final uiImage = await _loadImageFromFile(image.file);
           _cachedImages.add(uiImage);
         } catch (e) {
-          print('Ошибка загрузки изображения: $e');
+          // TODO: Add proper logging
+          // print('Ошибка загрузки изображения: $e');
           _cachedImages.add(await _createPlaceholderImage());
         }
       } else {
@@ -153,7 +151,7 @@ class ComicsPainter extends CustomPainter {
       // Применяем прозрачность
       final paint = Paint()
         ..colorFilter = ColorFilter.mode(
-          Colors.white.withOpacity(animationState.alpha),
+          Colors.white.withValues(alpha: animationState.alpha),
           BlendMode.modulate,
         );
 

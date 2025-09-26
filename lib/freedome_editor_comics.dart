@@ -1,3 +1,6 @@
+// Plugin
+export 'freedome_editor_comics_plugin.dart';
+
 // Models
 export 'models/comics.dart';
 export 'models/layer.dart';

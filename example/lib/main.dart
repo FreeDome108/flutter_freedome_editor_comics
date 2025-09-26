@@ -22,10 +22,7 @@ class ComicsEditorApp extends StatelessWidget {
             seedColor: Colors.deepPurple,
             brightness: Brightness.light,
           ),
-          appBarTheme: const AppBarTheme(
-            centerTitle: true,
-            elevation: 0,
-          ),
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
           cardTheme: CardThemeData(
             elevation: 2,
             shape: RoundedRectangleBorder(
@@ -128,11 +125,7 @@ class _ComicsEditorHomeState extends State<ComicsEditorHome>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          const EditorTab(),
-          const TimelineTab(),
-          const SettingsTab(),
-        ],
+        children: [const EditorTab(), const TimelineTab(), const SettingsTab()],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddContentDialog,
@@ -201,30 +194,32 @@ class _ComicsEditorHomeState extends State<ComicsEditorHome>
       type: FileType.custom,
       allowedExtensions: ['zip'],
     );
-    
+
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
       if (file.path != null) {
         // TODO: Load comics from file
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Opened: ${file.name}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Opened: ${file.name}')));
+        }
       }
     }
   }
 
   void _saveComics() {
     // TODO: Save comics
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Comics saved!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Comics saved!')));
   }
 
   void _exportComics() {
     // TODO: Export comics
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Comics exported!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Comics exported!')));
   }
 
   void _showAddContentDialog() {
@@ -296,15 +291,17 @@ class _ComicsEditorHomeState extends State<ComicsEditorHome>
       type: FileType.image,
       allowMultiple: false,
     );
-    
+
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
       if (file.path != null) {
         final viewModel = Provider.of<ComicsViewModel>(context, listen: false);
+        final messenger = ScaffoldMessenger.of(context);
+        final fileName = file.name;
         await viewModel.addLayer(file.path!);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image added: ${file.name}')),
-        );
+        if (mounted) {
+          messenger.showSnackBar(SnackBar(content: Text('Image added: $fileName')));
+        }
       }
     }
   }
@@ -314,23 +311,25 @@ class _ComicsEditorHomeState extends State<ComicsEditorHome>
       type: FileType.audio,
       allowMultiple: false,
     );
-    
+
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
       if (file.path != null) {
         final viewModel = Provider.of<ComicsViewModel>(context, listen: false);
+        final messenger = ScaffoldMessenger.of(context);
+        final fileName = file.name;
         await viewModel.addSound(file.path!);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Audio added: ${file.name}')),
-        );
+        if (mounted) {
+          messenger.showSnackBar(SnackBar(content: Text('Audio added: $fileName')));
+        }
       }
     }
   }
 
   void _addVideo() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Video support coming soon!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Video support coming soon!')));
   }
 }
 
@@ -375,9 +374,9 @@ class EditorTab extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Comics Canvas
               Card(
                 child: Padding(
@@ -410,29 +409,23 @@ class EditorTab extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Layers List
               if (viewModel.layers.isNotEmpty) ...[
-                Text(
-                  'Layers',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text('Layers', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 ...viewModel.layers.asMap().entries.map(
                   (entry) => _buildLayerCard(context, entry.key, entry.value),
                 ),
               ],
-              
+
               const SizedBox(height: 16),
-              
+
               // Sounds List
               if (viewModel.sounds.isNotEmpty) ...[
-                Text(
-                  'Sounds',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text('Sounds', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 ...viewModel.sounds.asMap().entries.map(
                   (entry) => _buildSoundCard(context, entry.key, entry.value),
@@ -458,7 +451,11 @@ class EditorTab extends StatelessWidget {
     );
   }
 
-  Widget _buildLayerCard(BuildContext context, int index, LayerViewModel layer) {
+  Widget _buildLayerCard(
+    BuildContext context,
+    int index,
+    LayerViewModel layer,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -501,7 +498,11 @@ class EditorTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSoundCard(BuildContext context, int index, SoundViewModel sound) {
+  Widget _buildSoundCard(
+    BuildContext context,
+    int index,
+    SoundViewModel sound,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -536,7 +537,11 @@ class EditorTab extends StatelessWidget {
     );
   }
 
-  void _handleLayerAction(BuildContext context, String action, LayerViewModel layer) {
+  void _handleLayerAction(
+    BuildContext context,
+    String action,
+    LayerViewModel layer,
+  ) {
     final viewModel = Provider.of<ComicsViewModel>(context, listen: false);
     switch (action) {
       case 'edit':
@@ -551,7 +556,11 @@ class EditorTab extends StatelessWidget {
     }
   }
 
-  void _handleSoundAction(BuildContext context, String action, SoundViewModel sound) {
+  void _handleSoundAction(
+    BuildContext context,
+    String action,
+    SoundViewModel sound,
+  ) {
     switch (action) {
       case 'play':
         // TODO: Play sound
@@ -606,9 +615,9 @@ class TimelineTab extends StatelessWidget {
                   },
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Animation Controls
               Card(
                 child: Padding(
@@ -625,22 +634,26 @@ class TimelineTab extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () => _addAnimation(context, AnimationType.translate),
+                            onPressed: () =>
+                                _addAnimation(context, AnimationType.translate),
                             icon: const Icon(Icons.open_with),
                             label: const Text('Move'),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => _addAnimation(context, AnimationType.rotate),
+                            onPressed: () =>
+                                _addAnimation(context, AnimationType.rotate),
                             icon: const Icon(Icons.rotate_right),
                             label: const Text('Rotate'),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => _addAnimation(context, AnimationType.scale),
+                            onPressed: () =>
+                                _addAnimation(context, AnimationType.scale),
                             icon: const Icon(Icons.zoom_in),
                             label: const Text('Scale'),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => _addAnimation(context, AnimationType.alpha),
+                            onPressed: () =>
+                                _addAnimation(context, AnimationType.alpha),
                             icon: const Icon(Icons.opacity),
                             label: const Text('Fade'),
                           ),
@@ -711,9 +724,9 @@ class SettingsTab extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),

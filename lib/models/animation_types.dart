@@ -41,9 +41,7 @@ abstract class Animation {
       }
     }
 
-    if (prev == null) {
-      prev = createDefault();
-    }
+    prev ??= createDefault();
 
     return Tuple(prev, curr);
   }

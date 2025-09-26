@@ -109,7 +109,7 @@ class FileManager {
       final scaledWidth = (size.width * scale).round();
       final scaledHeight = (size.height * scale).round();
 
-      final scaledPath = '$tempDir/$folder/${name}_${scaleInt}$ext';
+      final scaledPath = '$tempDir/$folder/${name}_$scaleInt$ext';
       final tileTemplate =
           '$tempDir/$folder/${name}_${scaleInt}_{0}_{1}_{2}$ext';
 
