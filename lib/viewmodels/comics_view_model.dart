@@ -9,7 +9,8 @@ import '../utils/zip_utils.dart';
 import 'layer_view_model.dart';
 import 'sound_view_model.dart';
 
-/// ViewModel для управления комиксом
+/// ViewModel для управления комиксом (Boranko 1.1)
+/// Поддерживает только формат Boranko 1.1
 class ComicsViewModel extends ChangeNotifier {
   Comics? _comics;
   List<LayerViewModel> _layers = [];
@@ -76,16 +77,29 @@ class ComicsViewModel extends ChangeNotifier {
     }
   }
 
-  /// Инициализация комикса
+  /// Инициализация комикса (Boranko 1.1)
+  /// Загружает .boranko файл с data.json, layers/, sounds/
   Future<void> initializeComics(String? filePath) async {
     await FileManager.deleteFolder();
     await FileManager.createFolders();
 
     if (filePath != null && !filePath.startsWith('<')) {
+      // Проверяем, что это валидный Boranko 1.1 архив
+      if (!await ZipUtils.validateBorankoArchive(filePath)) {
+        throw Exception('Invalid Boranko 1.1 archive: $filePath');
+      }
       await ZipUtils.unzip(filePath, await FileManager.tempFolder);
     }
 
     _comics = await Comics.load();
+
+    // Проверяем версию
+    if (_comics?.version != '1.1.0') {
+      throw Exception(
+        'Unsupported version: ${_comics?.version}. Only Boranko 1.1.0 is supported.',
+      );
+    }
+
     _updateViewModels();
     notifyListeners();
   }
@@ -103,21 +117,30 @@ class ComicsViewModel extends ChangeNotifier {
         .toList();
   }
 
-  /// Сохранение комикса
+  /// Сохранение комикса (Boranko 1.1)
+  /// Создает .boranko архив с data.json, layers/, sounds/
   Future<void> save([String? filePath]) async {
     if (_comics == null) return;
+
+    // Проверяем версию перед сохранением
+    if (_comics!.version != '1.1.0') {
+      throw Exception('Cannot save: unsupported version ${_comics!.version}');
+    }
 
     await _comics!.save();
 
     if (filePath != null) {
-      if (await File(filePath).exists()) {
-        await File(filePath).delete();
+      // Убедимся, что расширение .boranko
+      final outputPath = filePath.endsWith('.boranko')
+          ? filePath
+          : '$filePath.boranko';
+
+      if (await File(outputPath).exists()) {
+        await File(outputPath).delete();
       }
-      await ZipUtils.zip(
-        '${await FileManager.tempFolder}/*',
-        filePath,
-        compressionLevel: 0,
-      );
+
+      final tempFolder = await FileManager.tempFolder;
+      await ZipUtils.zip(tempFolder, outputPath, compressionLevel: 6);
     }
   }
 
@@ -171,4 +194,3 @@ class ComicsViewModel extends ChangeNotifier {
     super.dispose();
   }
 }
-

@@ -1,27 +1,64 @@
-# Freedome Editor Comics
+# Freedome Editor Comics - Boranko 1.1
 
-Flutter библиотека для создания и редактирования интерактивных комиксов с поддержкой анимации, звука и многоязычности.
+Flutter библиотека для создания и редактирования интерактивных комиксов в формате **Boranko 1.1**.
 
 ## Описание
 
-Freedome Editor Comics - это Flutter библиотека, портированная с C# legacy_comics_editor, которая предоставляет функциональность для создания интерактивных комиксов с поддержкой:
+Freedome Editor Comics - это Flutter библиотека для работы с форматом **Boranko 1.1**, который представляет собой современный стандарт для интерактивных комиксов с поддержкой:
 
-- **Многослойная структура** - создание слоев с изображениями
+- **Многослойная структура** - создание слоев с изображениями и анимациями
 - **Анимация** - поддержка трансформаций (перемещение, поворот, масштабирование, прозрачность)
-- **Звуковое сопровождение** - добавление аудио файлов с временными метками
+- **Звуковое сопровождение** - добавление аудио файлов с привязкой к слоям
 - **Многоязычность** - поддержка нескольких языков (EN, RU, HI)
-- **Экспорт/Импорт** - сохранение и загрузка проектов в формате .comics/.puzzle
+- **Формат Boranko 1.1** - современный формат с data.json, layers/, sounds/
 
-## Формат данных
+## ⚠️ Важно: Только Boranko 1.1
 
-### Структура Comics
+**Эта библиотека поддерживает ТОЛЬКО формат Boranko 1.1.**
+
+Legacy форматы больше не поддерживаются:
+- ❌ Старый формат .comics без data.json
+- ❌ Формат .puzzle
+- ✅ Только Boranko 1.1 (.boranko с data.json)
+
+## Формат данных Boranko 1.1
+
+### Структура .boranko архива
+
+```
+project.boranko (ZIP архив)
+├── data.json          # Основной файл с метаданными
+├── layers/            # Папка со слоями (изображения)
+│   ├── layer_0.jpg
+│   ├── layer_1.png
+│   └── ...
+└── sounds/            # Папка со звуками
+    ├── sound_0.mp3
+    ├── sound_1.mp3
+    └── ...
+```
+
+### Структура data.json
+
+```json
+{
+  "version": "1.1.0",
+  "width": 1080,
+  "height": 2160,
+  "layers": [...],
+  "sounds": [...]
+}
+```
+
+### Структура Comics (Dart)
 
 ```dart
 class Comics {
+  String version;      // Версия формата (всегда "1.1.0")
   int width;           // Ширина комикса
   int height;          // Высота комикса
   List<Layer> layers;  // Список слоев
-  List<Sound> sounds; // Список звуков
+  List<Sound> sounds;  // Список звуков
 }
 ```
 
@@ -126,20 +163,21 @@ abstract class Animation {
 ### Входные форматы
 - **Изображения**: JPG, PNG
 - **Аудио**: MP3
-- **Проекты**: .comics, .puzzle
+- **Проекты**: .boranko (только Boranko 1.1)
 
 ### Выходные форматы
-- **Проекты**: .comics (обычные комиксы), .puzzle (пазлы)
+- **Проекты**: .boranko (Boranko 1.1 с data.json, layers/, sounds/)
 
 ## Примеры использования
 
-### Создание нового комикса
+### Создание нового комикса (Boranko 1.1)
 
 ```dart
 import 'package:freedome_editor_comics/freedome_editor_comics.dart';
 
-// Создание нового комикса
+// Создание нового комикса в формате Boranko 1.1
 final comics = Comics(
+  version: '1.1.0',  // Обязательно указываем версию
   width: 1080,
   height: 2160,
   layers: [],
@@ -147,17 +185,19 @@ final comics = Comics(
 );
 
 // Добавление слоя
-final layer = Layer.create(
-  imagePath: '/path/to/image.jpg',
+final layer = await Layer.create(
+  '/path/to/image.jpg',
   scroll: 0.0,
-  isPuzzle: false,
+  puzzle: false,  // Deprecated, игнорируется
 );
 
-comics.layers.add(layer);
+if (layer != null) {
+  comics.layers.add(layer);
+}
 
 // Добавление звука
-final sound = Sound.create(
-  audioPath: '/path/to/audio.mp3',
+final sound = await Sound.create(
+  '/path/to/audio.mp3',
   scroll: 0.0,
 );
 
@@ -189,14 +229,21 @@ final rotateAnim = RotateAnim(
 layer.animations.add(rotateAnim);
 ```
 
-### Сохранение и загрузка
+### Сохранение и загрузка (Boranko 1.1)
 
 ```dart
-// Сохранение комикса
-await comics.save('/path/to/comics.comics');
+// Сохранение в формат Boranko 1.1
+final viewModel = ComicsViewModel();
+await viewModel.save('/path/to/project.boranko');
 
-// Загрузка комикса
-final loadedComics = await Comics.load('/path/to/comics.comics');
+// Загрузка из Boranko 1.1 архива
+await viewModel.initializeComics('/path/to/project.boranko');
+
+// Валидация Boranko 1.1 архива
+final isValid = await ZipUtils.validateBorankoArchive('/path/to/project.boranko');
+if (isValid) {
+  print('Valid Boranko 1.1 archive!');
+}
 ```
 
 ### Воспроизведение анимации
@@ -214,11 +261,19 @@ canvas.setAlpha(currentState.alpha);
 
 ## Архитектура
 
-Библиотека построена на основе MVVM паттерна:
+Библиотека построена на основе MVVM паттерна и поддерживает только формат Boranko 1.1:
 
 - **Models** - Модели данных (Comics, Layer, Image, Sound, Animation)
-- **ViewModels** - Логика представления (ComicsViewModel, LayerViewModel)
-- **Utils** - Утилиты (FileManager, ZipUtils, ImageMagick)
+  - Comics: версия 1.1.0, поддержка data.json
+  - Layer: работа со слоями в папке layers/
+  - Sound: работа со звуками в папке sounds/
+- **ViewModels** - Логика представления (ComicsViewModel, LayerViewModel, SoundViewModel)
+  - Валидация версии Boranko 1.1
+  - Автоматическая проверка архивов
+- **Utils** - Утилиты
+  - FileManager: управление структурой Boranko 1.1
+  - ZipUtils: работа с .boranko архивами
+  - ImageProcessor: обработка изображений
 
 ## Зависимости
 

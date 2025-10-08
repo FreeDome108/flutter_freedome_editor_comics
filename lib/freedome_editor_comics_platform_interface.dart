@@ -8,7 +8,8 @@ abstract class FreedomeEditorComicsPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FreedomeEditorComicsPlatform _instance = MethodChannelFreedomeEditorComics();
+  static FreedomeEditorComicsPlatform _instance =
+      MethodChannelFreedomeEditorComics();
 
   /// The default instance of [FreedomeEditorComicsPlatform] to use.
   ///

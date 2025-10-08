@@ -4,7 +4,8 @@ import '../utils/image_processor.dart';
 
 part 'image.g.dart';
 
-/// Модель изображения
+/// Модель изображения (Boranko 1.1)
+/// Legacy puzzle формат не поддерживается
 @JsonSerializable()
 class Image {
   String file;
@@ -17,17 +18,23 @@ class Image {
   /// Проверка, является ли изображение тайлами
   bool get isTiles => file.isNotEmpty && file.contains('{0}');
 
-  /// Обновление изображения
+  /// Обновление изображения (Boranko 1.1)
+  /// Параметр puzzle игнорируется
   Future<void> update(
     String folder,
     String newFile,
-    bool puzzle,
+    bool puzzle, // Deprecated: оставлен для обратной совместимости
     bool popup,
   ) async {
     if (popup) {
       this.popup = await FileManager.update(folder, this.popup, newFile);
     } else {
-      file = await FileManager.updateTiles(folder, file, newFile, puzzle);
+      file = await FileManager.updateTiles(
+        folder,
+        file,
+        newFile,
+        false,
+      ); // puzzle всегда false
       // Получаем реальные размеры изображения
       final size = await ImageProcessor.getImageSize(newFile);
       width = size.width;

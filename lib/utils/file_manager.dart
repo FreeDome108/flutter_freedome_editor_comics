@@ -2,19 +2,24 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'image_processor.dart';
 
-/// Менеджер файлов для работы с ресурсами комикса
+/// Менеджер файлов для работы с ресурсами Boranko 1.1
+///
+/// Управляет структурой:
+/// - layers/ (слои)
+/// - sounds/ (звуки)
+///
+/// Legacy форматы (puzzle, старый .comics) не поддерживаются
 class FileManager {
   static const String folderLayers = 'layers';
   static const String folderSounds = 'sounds';
   static const int tileSize = 512;
-  static const int placeholderSize = 512;
-  static const List<double> comicsScales = [1.0];
-  static const List<double> puzzleScales = [1.0, 0.5, 0.25, 0.125];
+  // Убрана поддержка puzzle формата
+  static const List<double> borankoScales = [1.0]; // Только Boranko 1.1
 
-  /// Получение временной папки
+  /// Получение временной папки для Boranko 1.1
   static Future<String> get tempFolder async {
     final tempDir = await getTemporaryDirectory();
-    return '${tempDir.path}/ComicsEditor/Temp';
+    return '${tempDir.path}/BorankoEditor/Temp';
   }
 
   /// Получение расширения файла
@@ -86,19 +91,21 @@ class FileManager {
     }
   }
 
-  /// Обновление тайлов
+  /// Обновление тайлов (Boranko 1.1)
+  /// Параметр puzzle больше не используется
   static Future<String> updateTiles(
     String folder,
     String oldFile,
     String newFile,
-    bool puzzle,
+    bool puzzle, // Deprecated: оставлен для обратной совместимости
   ) async {
     await deleteTiles(folder, oldFile);
 
     final tempDir = await tempFolder;
     final name = newFile.split('/').last.split('.').first;
     final ext = getFileExt(newFile);
-    final scales = puzzle ? puzzleScales : comicsScales;
+    final scales =
+        borankoScales; // Только Boranko 1.1, puzzle не поддерживается
 
     // Получаем размеры исходного изображения
     final size = await ImageProcessor.getImageSize(newFile);
@@ -128,19 +135,7 @@ class FileManager {
       await File(scaledPath).delete();
     }
 
-    // Создаем placeholder для puzzle режима
-    if (puzzle) {
-      final placeholderPath = '$tempDir/$folder/${name}_ph_0_0$ext';
-      if (size.width > placeholderSize || size.height > placeholderSize) {
-        await ImageProcessor.createPlaceholder(
-          newFile,
-          placeholderPath,
-          placeholderSize,
-        );
-      } else {
-        await File(newFile).copy(placeholderPath);
-      }
-    }
+    // Puzzle режим больше не поддерживается (только Boranko 1.1)
 
     final fullName = '${name}_{0}_{1}_{2}$ext';
     return fullName;

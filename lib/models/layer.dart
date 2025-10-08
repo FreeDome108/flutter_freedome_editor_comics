@@ -7,7 +7,8 @@ import 'animation_serializer.dart';
 
 part 'layer.g.dart';
 
-/// Модель слоя комикса
+/// Модель слоя комикса (Boranko 1.1)
+/// Legacy puzzle формат не поддерживается
 @JsonSerializable()
 class Layer {
   bool preview;
@@ -40,15 +41,21 @@ class Layer {
   }
 
   /// Установка изображения для определенного языка
+  /// Параметр puzzle игнорируется (только Boranko 1.1)
   Future<void> setImage(
     Cultures culture,
     String file,
-    bool puzzle,
+    bool puzzle, // Deprecated: оставлен для обратной совместимости
     bool popup,
   ) async {
     final index = CulturesHelper.indexOf(culture);
     if (index >= 0 && index < images.length) {
-      await images[index].update('layers', file, puzzle, popup);
+      await images[index].update(
+        'layers',
+        file,
+        false,
+        popup,
+      ); // puzzle всегда false
     }
   }
 
@@ -59,7 +66,8 @@ class Layer {
     }
   }
 
-  /// Создание нового слоя
+  /// Создание нового слоя (Boranko 1.1)
+  /// Параметр puzzle игнорируется
   static Future<Layer?> create(String file, double scroll, bool puzzle) async {
     final layer = Layer();
 
@@ -69,7 +77,12 @@ class Layer {
       layer.images.add(image);
 
       if (i == 0) {
-        await image.update('layers', file, puzzle, false);
+        await image.update(
+          'layers',
+          file,
+          false,
+          false,
+        ); // puzzle всегда false (Boranko 1.1)
       }
     }
 

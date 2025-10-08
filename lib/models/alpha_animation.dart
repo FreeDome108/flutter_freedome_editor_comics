@@ -27,4 +27,3 @@ class AlphaAnimation extends Animation {
     return AlphaAnimation(start: 0, end: 200, alpha: 1.0);
   }
 }
-

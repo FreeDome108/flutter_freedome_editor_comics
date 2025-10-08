@@ -30,4 +30,3 @@ class TranslateAnimation extends Animation {
     return TranslateAnimation(start: 0, end: 200, x: 0, y: 0);
   }
 }
-
