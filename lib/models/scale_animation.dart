@@ -42,3 +42,4 @@ class ScaleAnimation extends PivotAnimation {
     );
   }
 }
+

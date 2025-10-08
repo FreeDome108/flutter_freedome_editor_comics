@@ -38,3 +38,4 @@ class RotateAnimation extends PivotAnimation {
     );
   }
 }
+

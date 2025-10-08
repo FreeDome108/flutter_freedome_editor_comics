@@ -35,3 +35,4 @@ class SoundAnimation extends Animation {
     return SoundAnimation(start: 0, end: 0);
   }
 }
+

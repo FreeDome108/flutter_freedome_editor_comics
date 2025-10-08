@@ -171,3 +171,4 @@ class ComicsViewModel extends ChangeNotifier {
     super.dispose();
   }
 }
+

@@ -18,3 +18,4 @@ class CulturesHelper {
     return null;
   }
 }
+

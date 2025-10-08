@@ -169,3 +169,4 @@ class ComicsPainter extends CustomPainter {
         oldDelegate.cachedImages.length != cachedImages.length;
   }
 }
+

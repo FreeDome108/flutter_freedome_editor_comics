@@ -60,3 +60,4 @@ class Comics {
   factory Comics.fromJson(Map<String, dynamic> json) => _$ComicsFromJson(json);
   Map<String, dynamic> toJson() => _$ComicsToJson(this);
 }
+
