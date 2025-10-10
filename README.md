@@ -293,6 +293,23 @@ dependencies:
 
 MIT License
 
+## Документация
+
+### Основные документы
+
+- **[README.md](README.md)** - основная документация библиотеки
+- **[COMICA_VS_FREEDOME.md](COMICA_VS_FREEDOME.md)** - сравнение старой (COMICA PRO) и новой (FreeDome) систем
+- **[BORANKO_1.1_MIGRATION.md](BORANKO_1.1_MIGRATION.md)** - руководство по миграции
+- **[BORANKO_1.1_SUMMARY.md](BORANKO_1.1_SUMMARY.md)** - краткое описание формата
+- **[CHANGELOG.md](CHANGELOG.md)** - история изменений
+
+### Исторические материалы
+
+- **[olddoc/](olddoc/)** - архив документации COMICA PRO (legacy система 2018 года)
+  - Примеры HTML5 анимаций из Adobe Animate
+  - Инструкции по работе со старым редактором
+  - Доступы к серверной инфраструктуре Mahabharata
+
 ## Поддержка
 
 Для вопросов и предложений создавайте issues в репозитории проекта.

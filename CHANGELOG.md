@@ -27,8 +27,10 @@
 
 - **Documentation**:
   - Updated README.md with Boranko 1.1 structure
+  - Added COMICA_VS_FREEDOME.md - comparison of legacy COMICA PRO and new FreeDome systems
   - Added BORANKO_1.1_MIGRATION.md - migration guide
   - Added BORANKO_1.1_IMPLEMENTATION_REPORT.md - implementation report
+  - Added olddoc/ documentation - archive of COMICA PRO legacy system (2018)
 
 ### ❌ Removed
 
